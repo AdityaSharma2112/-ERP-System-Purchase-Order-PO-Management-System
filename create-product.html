@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{
+        background:#f4f6f9;
+        }
+        .form-card{
+        background:white;
+        padding:30px;
+        border-radius:12px;
+        box-shadow:0 4px 15px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+    <div id="poToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+        <div class="toast-body" id="toastMessage">
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+    </div>
+    <div class="container py-5">
+        <div id="navbarContainer"></div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="form-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3>Create Product</h3>
+                        <a href="dashboard.html" class="btn btn-secondary">Back</a>
+                    </div>
+                    <form id="productForm">                
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Product Name</label>
+                                <input type="text" class="form-control" id="productName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">SKU</label>
+                                <input type="text" class="form-control" id="sku" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Unit Price</label>
+                                <input type="number" class="form-control" id="price" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Stock Level</label>
+                                <input type="number" class="form-control" id="stock" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Description</label>
+                                    <div class="d-flex">
+                                        <textarea class="form-control me-2" id="description" rows="3" placeholder="Enter product description"></textarea>
+                                        <button type="button" class="btn btn-outline-primary" id="autoDescBtn" >Auto-Description</button>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="text-end mt-3">
+                            <button type="reset" class="btn btn-outline-secondary me-2">Clear</button>
+                            <button type="submit" class="btn btn-success">Save Product</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="navbar.js"></script>
+<script>
+  loadNavbar();
+</script>
+
+<script>
+    function showAleart(success,message){
+        const toastEl = document.getElementById('poToast');
+        toastEl.className = `toast align-items-center border-0 text-white ${
+            success? "bg-success" : "bg-danger" 
+        }`;
+        const toastBody = document.getElementById('toastMessage')
+        toastBody.textContent = message
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+ 
+    document.getElementById("productForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    let product = {
+        name:document.getElementById("productName").value,
+        sku:document.getElementById("sku").value,
+        unit_price:document.getElementById("price").value,
+        stock_level:document.getElementById("stock").value,
+        description:document.getElementById("description").value
+    };
+
+    const res = await apiFetch('create-product',{
+    method: 'POST',
+    body: JSON.stringify(product),
+    headers: {
+        "Authorization": `Bearer ${token}`
+    }
+});
+    document.getElementById("productForm").reset();
+    
+    
+    });
+
+    document.getElementById("autoDescBtn").addEventListener("click", async function(e) {
+        productName = document.getElementById("productName").value
+        if (productName==""){return }
+        const res = await apiFetch('auto-description',{
+            method: 'POST',
+            body: JSON.stringify({product: productName}),
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+        console.log(res)
+        document.getElementById("description").value = res.generated
+
+    })
+</script>
+
+</body>
+</html>
