@@ -122,14 +122,6 @@ DATABASE_URL = "postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/YOUR_DB_NAME
 python init_db.py
 ```
 
-#### f) (Optional) Run migrations for schema upgrades
-
-```bash
-python migrate.py           # apply all pending migrations
-python migrate.py --status  # check what has been applied
-python migrate.py --rollback # rollback the last migration
-```
-
 #### g) (Optional) Seed sample data
 
 ```bash
